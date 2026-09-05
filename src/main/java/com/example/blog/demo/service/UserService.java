@@ -43,4 +43,77 @@ public class UserService {
         );
     }
 
+    public ResponseEntity<?> getUser(String email) {
+
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found")
+                );
+
+        return ResponseEntity.ok(
+                new ApiResponce<>(
+                        true,
+                        "User fetched successfully",
+                        user
+                )
+        );
+    }
+
+
+    public  ResponseEntity<ApiResponce<?>> update(User user){
+
+        User UserData = userRepo.findByEmail(user.getEmail()).orElse(null);
+        if(UserData == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ApiResponce<>(
+                            false,
+                            "User not found",
+                            null
+                    )
+            );
+        }
+        UserData.setName(user.getName());
+        UserData.setPhoneNumber(user.getPhoneNumber());
+        User updatedUser = userRepo.save(UserData);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ApiResponce<>(
+                        true,
+                        "User updated successfully",
+                        updatedUser
+                )
+        );
+
+    }
+
+    public ResponseEntity<ApiResponce<Void>> delete(String id, String email) {
+        User user = userRepo.findById(id).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ApiResponce<>(
+                            false,
+                            "User not found",
+                            null
+                    )
+            );
+        }
+        if (!user.getEmail().equals(email)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                    new ApiResponce<>(
+                            false,
+                            "You are not authorized to delete this user",
+                            null
+                    )
+            );
+        }
+        userRepo.delete(user);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ApiResponce<>(
+                        true,
+                        "User deleted successfully",
+                        null
+                )
+        );
+    }
+
 }

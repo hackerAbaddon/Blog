@@ -64,7 +64,7 @@ public class AuthService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                     new LoginResponce(
                             false,
-                            "Email or password incorrect",
+                            "Email or password is incorrect",
                             null
                     )
             );
