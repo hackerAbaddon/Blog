@@ -26,7 +26,7 @@ public class AuthService {
                 .orElse(null);
         if (existingUser != null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    new ApiResponce(
+                    new ApiResponce<>(
                             false,
                             "User Already Exist",
                             null
