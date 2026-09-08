@@ -1,11 +1,16 @@
 package com.example.blog.demo.modal;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
-@Entity
+@Document(collection = "blogs")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,30 +19,28 @@ import java.time.LocalDateTime;
 public class Blog {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    @Column(nullable = false)
+
+    @Field("title")
     private String title;
-    @Column(nullable = false, columnDefinition = "TEXT")
+
+    @Field("content")
     private String content;
-    @Column(nullable = false)
+
+    @Field("media_url")
     private String mediaUrl;
-    @Column(nullable = false)
+
+    @Field("media_type")
     private String mediaType;
+
+    @CreatedDate
+    @Field("created_at")
     private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Field("updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @DBRef
     private User user;
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 }

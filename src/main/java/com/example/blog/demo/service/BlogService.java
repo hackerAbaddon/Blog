@@ -237,7 +237,7 @@ public class BlogService {
             );
         }
 
-        Page<Blog> blogs = blogRepo.findAllByUserId(
+        Page<Blog> blogs = blogRepo.findByUser_Id(
                 user.getId(),
                 pageable
         );

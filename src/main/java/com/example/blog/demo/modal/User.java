@@ -1,14 +1,16 @@
 package com.example.blog.demo.modal;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Entity
+@Document(collection = "users")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,18 +18,21 @@ import lombok.Setter;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
- private String id;
+    private String id;
+
     @NotBlank(message = "Name is required")
+    @Field("name")
     private String name;
+
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
- private String email;
+    @Field("email")
+    private String email;
+
     @NotBlank(message = "Phone number is required")
+    @Field("phone_number")
     private String phoneNumber;
 
-
+    @Field("password")
     private String password;
-
-
 }
