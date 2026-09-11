@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/blog")
@@ -24,6 +26,12 @@ public class BlogController {
     ResponseEntity<BlogResponse<BlogData>> createBlog(@RequestBody  Blog blog, Authentication authentication) {
         String email = authentication.getName();
          return BlogService.createBlog(blog,email);
+    }
+
+    @PostMapping("/bulk-create")
+    ResponseEntity<BlogResponse<List<BlogData>>> bulkCreateBlogs(@RequestBody List<Blog> blogs, Authentication authentication) {
+        String email = authentication.getName();
+        return BlogService.bulkCreateBlogs(blogs, email);
     }
 
     @PutMapping("/update/{id}")

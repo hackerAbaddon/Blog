@@ -1,0 +1,421 @@
+{
+  "info": {
+    "_postman_id": "7b0fe4f6-8ea6-43d8-b7cb-0c5a3f23a9cc",
+    "name": "Blog API Collection",
+    "description": "Postman collection for the Spring Boot blog application in this repository. The project exposes JWT-protected blog and user APIs, with public auth endpoints for sign-up and login.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth APIs",
+      "item": [
+        {
+          "name": "Sign Up",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phoneNumber\": \"9876543210\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/sign-up",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "sign-up"
+              ]
+            },
+            "description": "Register a new user. This endpoint is public and does not require authentication."
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response && response.token) {",
+                  "  pm.collectionVariables.set('authToken', response.token);",
+                  "  console.log('JWT token saved to collection variable authToken');",
+                  "}",
+                  "else {",
+                  "  console.log('No token returned in login response');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Login with email and password. The JWT returned here is used for protected requests."
+          }
+        }
+      ]
+    },
+    {
+      "name": "User APIs",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                ""
+              ]
+            },
+            "description": "Fetch the authenticated user by email from the JWT subject."
+          }
+        },
+        {
+          "name": "Save User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phoneNumber\": \"9876543210\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/user/save",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "save"
+              ]
+            },
+            "description": "Create or save a user record. This endpoint is protected and can be used when the authenticated user context is needed."
+          }
+        },
+        {
+          "name": "Update Current User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Updated\",\n  \"phoneNumber\": \"9988776655\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/user/update",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "update"
+              ]
+            },
+            "description": "Update the authenticated user's name and phone number. The backend overwrites the email from the authenticated principal."
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "{{userId}}"
+              ]
+            },
+            "description": "Delete a user by id. Requires the matching authenticated user identity."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Blog APIs",
+      "item": [
+        {
+          "name": "Create Blog",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"My First Blog\",\n  \"content\": \"This is the content of the blog post.\",\n  \"mediaUrl\": \"https://example.com/images/post1.jpg\",\n  \"mediaType\": \"image/jpeg\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/blog/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "blog",
+                "create"
+              ]
+            },
+            "description": "Create a blog entry for the authenticated user."
+          }
+        },
+        {
+          "name": "Bulk Create Blogs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"title\": \"Bulk Blog 1\",\n    \"content\": \"This is the first blog in a bulk upload.\",\n    \"mediaUrl\": \"https://example.com/images/bulk-1.jpg\",\n    \"mediaType\": \"image/jpeg\"\n  },\n  {\n    \"title\": \"Bulk Blog 2\",\n    \"content\": \"This is the second blog in a bulk upload.\",\n    \"mediaUrl\": \"https://example.com/images/bulk-2.jpg\",\n    \"mediaType\": \"image/jpeg\"\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/blog/bulk-create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "blog",
+                "bulk-create"
+              ]
+            },
+            "description": "Create multiple blog posts for the authenticated user in one request."
+          }
+        },
+        {
+          "name": "Update Blog",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Blog Title\",\n  \"content\": \"Updated blog content\",\n  \"mediaUrl\": \"https://example.com/images/post1-updated.jpg\",\n  \"mediaType\": \"image/jpeg\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/blog/update/{{blogId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "blog",
+                "update",
+                "{{blogId}}"
+              ]
+            },
+            "description": "Update an existing blog if it belongs to the authenticated user."
+          }
+        },
+        {
+          "name": "Delete Blog",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/blog/delete/{{blogId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "blog",
+                "delete",
+                "{{blogId}}"
+              ]
+            },
+            "description": "Delete a blog by id if it belongs to the authenticated user."
+          }
+        },
+        {
+          "name": "Get Blog by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/blog/get/{{blogId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "blog",
+                "get",
+                "{{blogId}}"
+              ]
+            },
+            "description": "Fetch a single blog post owned by the authenticated user."
+          }
+        },
+        {
+          "name": "Get All Blogs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/blog/get-all?page=0&size=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "blog",
+                "get-all"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Return all blogs for the authenticated user as a paginated result."
+          }
+        }
+      ]
+    }
+  ]
+}

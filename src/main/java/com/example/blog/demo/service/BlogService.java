@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -60,6 +61,70 @@ public class BlogService {
 
 
 
+    }
+
+    public ResponseEntity<BlogResponse<List<BlogData>>> bulkCreateBlogs(List<Blog> blogs, String email) {
+
+        User user = userRepo.findByEmail(email)
+                .orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new BlogResponse<>(
+                            false,
+                            "User not found",
+                            null
+                    )
+            );
+        }
+
+        if (blogs == null || blogs.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new BlogResponse<>(
+                            false,
+                            "No blogs provided for upload",
+                            null
+                    )
+            );
+        }
+
+        List<Blog> savedBlogs = new ArrayList<>();
+        for (Blog blog : blogs) {
+            if (blog == null) {
+                continue;
+            }
+            blog.setUser(user);
+            savedBlogs.add(blogRepo.save(blog));
+        }
+
+        if (savedBlogs.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new BlogResponse<>(
+                            false,
+                            "No valid blog data provided",
+                            null
+                    )
+            );
+        }
+
+        List<BlogData> response = savedBlogs.stream()
+                .map(savedBlog -> new BlogData(
+                        savedBlog.getId(),
+                        savedBlog.getTitle(),
+                        savedBlog.getContent(),
+                        savedBlog.getMediaType(),
+                        savedBlog.getMediaUrl(),
+                        savedBlog.getCreatedAt()
+                ))
+                .toList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new BlogResponse<>(
+                        true,
+                        "Blogs created successfully",
+                        response
+                )
+        );
     }
 
     public ResponseEntity<BlogResponse<BlogData>> updateBlog(String id , Blog blog, String email) {

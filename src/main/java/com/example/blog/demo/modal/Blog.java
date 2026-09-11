@@ -1,43 +1,35 @@
 package com.example.blog.demo.modal;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Document(collection = "blogs")
 public class Blog {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    @Column(nullable = false)
     private String title;
-    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
-    @Column(nullable = false)
     private String mediaUrl;
-    @Column(nullable = false)
     private String mediaType;
+
+    @CreatedDate
     private LocalDateTime createdAt;
+
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @DBRef
     private User user;
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 }

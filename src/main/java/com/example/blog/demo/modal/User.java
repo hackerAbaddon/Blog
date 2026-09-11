@@ -1,14 +1,13 @@
 package com.example.blog.demo.modal;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
 
-@Entity
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,7 +15,6 @@ import lombok.Setter;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
  private String id;
     @NotBlank(message = "Name is required")
     private String name;
